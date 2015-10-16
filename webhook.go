@@ -1,15 +1,13 @@
 package main
 
 import (
-	"fmt"
 	"net/http"
 )
 
-type Webhook struct {
-}
+type PushHandler func(branch string)
 
-func NewWebhook() *Webhook {
-	return &Webhook{}
+type Webhook struct {
+	HandlePush PushHandler
 }
 
 func (w *Webhook) ServeHTTP(resp http.ResponseWriter, req *http.Request) {
@@ -24,5 +22,5 @@ func (w *Webhook) handlePOST(resp http.ResponseWriter, req *http.Request) {
 	if err != nil {
 		panic(err)
 	}
-	fmt.Println(branch)
+	go w.HandlePush(branch)
 }
