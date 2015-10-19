@@ -12,15 +12,9 @@ import (
 )
 
 var buildFlag = flag.Bool("build", false, "just build the site now")
-var repoFlag = flag.String("dir", "repo", "directory to clone repo to")
 
 func main() {
 	flag.Parse()
-
-	viper.SetDefault("remote", "")
-	viper.SetDefault("branch", "master")
-	viper.SetDefault("build_script", "")
-	viper.SetDefault("build_dir", "")
 
 	viper.SetConfigName("config")
 	viper.AddConfigPath(".")
@@ -30,6 +24,7 @@ func main() {
 	}
 
 	autobuild := &AutoBuild{
+		Dir: viper.GetString("dir"),
 		Git: &Git{
 			Remote: viper.GetString("git.remote"),
 			Branch: viper.GetString("git.branch"),
@@ -39,27 +34,22 @@ func main() {
 			Command: viper.GetString("build.command"),
 			Args:    viper.GetString("build.args"),
 		},
-	}
-
-	if *buildFlag {
-		autobuild.Run(*repoFlag)
-		return
-	}
-
-	webhook := &Webhook{
-		HandlePush: func(branch string) {
-			if branch == autobuild.Git.Branch {
-				autobuild.Run(*repoFlag)
-			}
+		Webhook: &Webhook{
+			Secret: viper.GetString("webhook.secret"),
 		},
 	}
 
+	if *buildFlag {
+		autobuild.Run()
+		return
+	}
+
 	r := mux.NewRouter()
-	r.Handle("/events", webhook)
+	r.Handle("/events", autobuild)
 
 	port := os.Getenv("PORT")
 	if port == "" {
-		port = "9999"
+		port = viper.GetString("webhook.port")
 	}
 	fmt.Println("Starting server on port", port)
 

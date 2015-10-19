@@ -7,20 +7,14 @@ import (
 type PushHandler func(branch string)
 
 type Webhook struct {
-	HandlePush PushHandler
+	Secret string
 }
 
-func (w *Webhook) ServeHTTP(resp http.ResponseWriter, req *http.Request) {
-	switch req.Method {
-	case "POST":
-		w.handlePOST(resp, req)
-	}
-}
-
-func (w *Webhook) handlePOST(resp http.ResponseWriter, req *http.Request) {
-	branch, err := ParseWebhook(req.Body)
+func (w *Webhook) Handle(resp http.ResponseWriter, req *http.Request, fn PushHandler) error {
+	branch, err := ParseWebhook(req, w.Secret)
 	if err != nil {
-		panic(err)
+		return err
 	}
-	go w.HandlePush(branch)
+	go fn(branch)
+	return nil
 }

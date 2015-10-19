@@ -33,6 +33,15 @@ func (g *Git) Status(repodir string) error {
 	return cmd.Exec(repodir)
 }
 
+func (g *Git) Fetch(repodir string) error {
+	cmd := Command{
+		Command:      "git",
+		Args:         []string{"fetch"},
+		HandleStdout: pipeToConsole,
+	}
+	return cmd.Exec(repodir)
+}
+
 func (g *Git) Checkout(repodir string) error {
 	cmd := Command{
 		Command:      "git",
