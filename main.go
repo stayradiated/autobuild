@@ -46,7 +46,7 @@ func main() {
 	r := mux.NewRouter()
 	r.Handle("/events", autobuild)
 
-	port := viper.GetString("webhook.port")
+	port := viper.GetString("port")
 	fmt.Println("Starting server on port", port)
 
 	http.Handle("/", r)
