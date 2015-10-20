@@ -4,7 +4,6 @@ import (
 	"fmt"
 	"log"
 	"net/http"
-	"os"
 
 	"flag"
 	"github.com/gorilla/mux"
@@ -47,10 +46,7 @@ func main() {
 	r := mux.NewRouter()
 	r.Handle("/events", autobuild)
 
-	port := os.Getenv("PORT")
-	if port == "" {
-		port = viper.GetString("webhook.port")
-	}
+	port := viper.GetString("webhook.port")
 	fmt.Println("Starting server on port", port)
 
 	http.Handle("/", r)
