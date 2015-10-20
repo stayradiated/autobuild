@@ -16,47 +16,27 @@ func (g *Git) Clone(reponame string) error {
 	filename := path.Base(reponame)
 	dirname := path.Dir(reponame)
 
-	cmd := Command{
-		Command:      "git",
-		Args:         []string{"clone", "--depth", "1", g.Remote, filename},
-		HandleStdout: pipeToConsole,
-	}
+	cmd := NewCommand("git", "clone", g.Remote, filename)
 	return cmd.Exec(dirname)
 }
 
 func (g *Git) Status(repodir string) error {
-	cmd := Command{
-		Command:      "git",
-		Args:         []string{"status"},
-		HandleStdout: pipeToConsole,
-	}
+	cmd := NewCommand("git", "status")
 	return cmd.Exec(repodir)
 }
 
 func (g *Git) Fetch(repodir string) error {
-	cmd := Command{
-		Command:      "git",
-		Args:         []string{"fetch"},
-		HandleStdout: pipeToConsole,
-	}
+	cmd := NewCommand("git", "fetch")
 	return cmd.Exec(repodir)
 }
 
 func (g *Git) Checkout(repodir string) error {
-	cmd := Command{
-		Command:      "git",
-		Args:         []string{"checkout", g.Branch},
-		HandleStdout: pipeToConsole,
-	}
+	cmd := NewCommand("git", "checkout", g.Branch)
 	return cmd.Exec(repodir)
 }
 
 func (g *Git) Pull(repodir string) error {
-	cmd := Command{
-		Command:      "git",
-		Args:         []string{"pull"},
-		HandleStdout: pipeToConsole,
-	}
+	cmd := NewCommand("git", "pull")
 	return cmd.Exec(repodir)
 }
 
@@ -69,11 +49,7 @@ func (g *Git) CurrentSHA(repodir string) (string, error) {
 		SHA = strings.Split(scanner.Text(), " ")[1]
 	}
 
-	cmd := Command{
-		Command:      "git",
-		Args:         []string{"log", "-1", g.Branch},
-		HandleStdout: getSHA,
-	}
-
+	cmd := NewCommand("git", "log", "-1", g.Branch)
+	cmd.HandleStdout = getSHA
 	return SHA, cmd.Exec(repodir)
 }

@@ -22,6 +22,16 @@ type Command struct {
 	Command      string
 	Args         []string
 	HandleStdout HandlePipe
+	HandleStderr HandlePipe
+}
+
+func NewCommand(command ...string) *Command {
+	return &Command{
+		Command:      command[0],
+		Args:         command[1:],
+		HandleStderr: pipeToConsole,
+		HandleStdout: pipeToConsole,
+	}
 }
 
 func (c *Command) Exec(dirname string) error {
