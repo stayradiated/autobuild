@@ -55,11 +55,12 @@ func (a *AutoBuild) fetchAndBuild() error {
 	if err != nil {
 		return err
 	}
+	SHA = SHA[0:6]
 
 	a.Slacker.Send(fmt.Sprintf("Starting to build version %s", SHA))
 
 	if err := a.Build.Exec(repo, &BuildVariables{
-		Version: SHA[0:6],
+		Version: SHA,
 	}); err != nil {
 		return err
 	}
