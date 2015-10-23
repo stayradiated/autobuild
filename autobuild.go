@@ -1,6 +1,8 @@
 package main
 
 import (
+	"fmt"
+	"github.com/stayradiated/slacker"
 	"log"
 	"net/http"
 	"os"
@@ -11,9 +13,18 @@ type AutoBuild struct {
 	Git     *Git
 	Build   *Build
 	Webhook *Webhook
+	Slacker *slacker.Slacker
 }
 
 func (a *AutoBuild) Run() error {
+	if err := a.fetchAndBuild(); err != nil {
+		a.Slacker.Send("Build failed! Check the error logs for more info.")
+		return err
+	}
+	return nil
+}
+
+func (a *AutoBuild) fetchAndBuild() error {
 	repo := a.Dir
 
 	exists, err := checkDirExists(repo)
@@ -45,11 +56,15 @@ func (a *AutoBuild) Run() error {
 		return err
 	}
 
+	a.Slacker.Send(fmt.Sprintf("Starting to build version %s", SHA))
+
 	if err := a.Build.Exec(repo, &BuildVariables{
 		Version: SHA[0:6],
 	}); err != nil {
 		return err
 	}
+
+	a.Slacker.Send(fmt.Sprintf("Finished building version %s", SHA))
 
 	return nil
 }

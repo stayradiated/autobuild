@@ -8,6 +8,7 @@ import (
 	"flag"
 	"github.com/gorilla/mux"
 	"github.com/spf13/viper"
+	"github.com/stayradiated/slacker"
 )
 
 var buildFlag = flag.Bool("build", false, "just build the site now")
@@ -35,6 +36,11 @@ func main() {
 		},
 		Webhook: &Webhook{
 			Secret: viper.GetString("webhook.secret"),
+		},
+		Slacker: &slacker.Slacker{
+			URL:      viper.GetString("slack.url"),
+			Icon:     viper.GetString("slack.icon"),
+			Username: viper.GetString("slack.username"),
 		},
 	}
 
