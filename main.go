@@ -46,7 +46,6 @@ func main() {
 
 	if *buildFlag {
 		autobuild.Run()
-		return
 	}
 
 	r := mux.NewRouter()
