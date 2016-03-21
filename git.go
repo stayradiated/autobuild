@@ -40,6 +40,11 @@ func (g *Git) Pull(repodir string) error {
 	return cmd.Exec(repodir)
 }
 
+func (g *Git) UpdateSubmodules(repodir string) error {
+	cmd := NewCommand("git", "submodule", "update", "--init", "--recursive")
+	return cmd.Exec(repodir)
+}
+
 func (g *Git) CurrentSHA(repodir string) (string, error) {
 	var SHA string
 

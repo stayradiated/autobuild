@@ -49,6 +49,9 @@ func (a *AutoBuild) fetchAndBuild() error {
 		if err := a.Git.Pull(repo); err != nil {
 			return err
 		}
+		if err := a.Git.UpdateSubmodules(repo); err != nil {
+			return err
+		}
 	}
 
 	SHA, err := a.Git.CurrentSHA(repo)
